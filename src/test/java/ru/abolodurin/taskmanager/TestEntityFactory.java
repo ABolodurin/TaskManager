@@ -6,7 +6,8 @@ import ru.abolodurin.taskmanager.model.entity.CommonException;
 import ru.abolodurin.taskmanager.model.entity.Role;
 import ru.abolodurin.taskmanager.model.entity.User;
 
-//TODO заполнить тестовые сушности после добавления бизнес логики
+import java.util.HashSet;
+
 public class TestEntityFactory {
     private static TestEntityFactory instance;
 
@@ -27,22 +28,11 @@ public class TestEntityFactory {
                 .email(name + "@example.com")
                 .password(name)
                 .role(Role.USER)
-//                .posts(new ArrayList<>())
-//                .subscriptions(new ArrayList<>())
-//                .subscribers(new ArrayList<>())
+                .createdTasks(new HashSet<>())
+                .takenTasks(new HashSet<>())
                 .build();
     }
 
-    //    public UserRequest getUserRequest() {
-//        String name = "userRequest_" + getIdentifier();
-//        return UserRequest.of(name);
-//    }
-//
-//    public UserResponse getUserResponse() {
-//        String name = "userResponse_" + getIdentifier();
-//        return UserResponse.of(name);
-//    }
-//
     public CommonException getCommonException() {
         String message = "message_" + getIdentifier();
         return new CommonException(message);
@@ -67,11 +57,11 @@ public class TestEntityFactory {
                 .build();
     }
 
-    private static String getIdentifier() {
+    private static String getIdentifier() { //example "Object782cc5fa"
         Object o = new Object();
         return o.toString()
                 .replace("@", "")
-                .replace("java.lang.", ""); //example "Object782cc5fa"
+                .replace("java.lang.", "");
     }
 
 }

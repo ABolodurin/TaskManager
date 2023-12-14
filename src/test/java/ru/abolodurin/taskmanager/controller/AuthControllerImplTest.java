@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.abolodurin.taskmanager.TestEntityFactory;
 import ru.abolodurin.taskmanager.model.dto.LoginRequest;
 import ru.abolodurin.taskmanager.model.dto.RegisterRequest;
-import ru.abolodurin.taskmanager.model.entity.Code;
 import ru.abolodurin.taskmanager.model.entity.CommonException;
 import ru.abolodurin.taskmanager.security.JwtService;
 import ru.abolodurin.taskmanager.service.AuthService;
@@ -121,7 +120,7 @@ class AuthControllerImplTest {
                         .characterEncoding("UTF-8")
                         .content(objectMapper.writeValueAsBytes(loginRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", Matchers.is(String.valueOf(Code.REQUEST_VALIDATION_ERROR))));
+                .andExpect(jsonPath("$.message", Matchers.containsString("must be not empty")));
     }
 
     @Test
@@ -135,14 +134,13 @@ class AuthControllerImplTest {
                         .characterEncoding("UTF-8")
                         .content(objectMapper.writeValueAsBytes(registerRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", Matchers.is(String.valueOf(expected.getCode()))))
                 .andExpect(jsonPath("$.message", Matchers.is(expected.getMessage())));
     }
 
     @Test
     void shouldReturnCorrectAuthError() throws Exception {
         LoginRequest loginRequest = entityFactory.getLoginRequest();
-        AuthenticationException expected = new BadCredentialsException("message");
+        AuthenticationException expected = new BadCredentialsException(entityFactory.getCommonException().getMessage());
         when(authService.auth(any())).thenThrow(expected);
 
         mvc.perform(post("/login")
@@ -150,7 +148,6 @@ class AuthControllerImplTest {
                         .characterEncoding("UTF-8")
                         .content(objectMapper.writeValueAsBytes(loginRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", Matchers.is(String.valueOf(Code.AUTHENTICATION_ERROR))))
                 .andExpect(jsonPath("$.message", Matchers.is(expected.getMessage())));
     }
 
